@@ -96,6 +96,8 @@ class WeatherVC: UIViewController {
         contentView.textFieldLon.layer.borderColor = UIColor.cGrey.cgColor
         contentView.latLabel.textColor = .cBlue
         contentView.lonLabel.textColor = .cBlue
+        contentView.errorLatLabel.isHidden = true
+        contentView.errorLonLabel.isHidden = true
     }
     
     private func fetchWeatherData() {
