@@ -1,7 +1,6 @@
 //
 //  WeatherView.swift
 
-
 import UIKit
 import SnapKit
 
@@ -34,7 +33,7 @@ class WeatherView: UIView {
         return label
     }()
     
-    private(set) var errorlonLabel: UILabel = {
+    private(set) var errorLonLabel: UILabel = {
         let label = UILabel()
         label.text = "Неправильно введені координати"
         label.font = .customFont(font: .roboto, style: .regular, size: 12)
@@ -55,7 +54,7 @@ class WeatherView: UIView {
         return label
     }()
     
-    private(set) var errorlatLabel: UILabel = {
+    private(set) var errorLatLabel: UILabel = {
         let label = UILabel()
         label.text = "Неправильно введені координати"
         label.font = .customFont(font: .roboto, style: .regular, size: 12)
@@ -77,9 +76,7 @@ class WeatherView: UIView {
         
         let placeholderText = NSAttributedString(string: "Введіть координати", attributes: placeholderAttributes)
         textField.attributedPlaceholder = placeholderText
-        
-        
-        
+    
         let textAttributes: [NSAttributedString.Key: Any] = [
             .font: font,
             .foregroundColor: UIColor.white,
@@ -117,8 +114,6 @@ class WeatherView: UIView {
         let placeholderText = NSAttributedString(string: "Введіть координати", attributes: placeholderAttributes)
         textField.attributedPlaceholder = placeholderText
         
-        
-        
         let textAttributes: [NSAttributedString.Key: Any] = [
             .font: font,
             .foregroundColor: UIColor.white,
@@ -133,7 +128,7 @@ class WeatherView: UIView {
         textField.layer.borderColor = UIColor.cDarkBlue.cgColor
         textField.layer.cornerRadius = 5
         textField.keyboardType = .decimalPad
-
+        
         let paddingLeft = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: textField.frame.height))
         textField.leftView = paddingLeft
         textField.leftViewMode = .always
@@ -168,7 +163,6 @@ class WeatherView: UIView {
         btn.clipsToBounds = true
         return btn
     }()
-
     
     private(set) var chooseLabel: UILabel = {
         let label = UILabel()
@@ -335,46 +329,42 @@ class WeatherView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     private func configureCancelButton() {
         cancelBtn.addTarget(self, action: #selector(buttonHighlighted), for: [.touchDown, .touchDragInside])
         cancelBtn.addTarget(self, action: #selector(buttonUnhighlighted), for: [.touchUpInside, .touchCancel, .touchDragExit])
     }
-
+    
     @objc private func buttonHighlighted() {
-        cancelBtn.layer.borderWidth = 2 // Увеличиваем ширину границы при нажатии
+        cancelBtn.layer.borderWidth = 2
     }
-
+    
     @objc private func buttonUnhighlighted() {
-        cancelBtn.layer.borderWidth = 1 // Возвращаем к стандартной ширине
+        cancelBtn.layer.borderWidth = 1
     }
-
+    
     private func setupUI() {
         self.backgroundColor = .cBg
         [firstView, cancelBtn, sendBtn, chooseLabel, lastDataLabel, dataLabel, secondView] .forEach(addSubview(_:))
+        
         firstView.addSubview(oneLabel)
         firstView.addSubview(lonLabel)
         firstView.addSubview(latLabel)
         firstView.addSubview(textFieldLon)
         firstView.addSubview(textFieldLat)
+        firstView.addSubview(errorLatLabel)
+        firstView.addSubview(errorLonLabel)
         
-        firstView.addSubview(errorlatLabel)
-        firstView.addSubview(errorlonLabel)
-
         secondView.addSubview(weatherLabel)
-        
         secondView.addSubview(temperaturesLabel)
         secondView.addSubview(iconTempIV)
         secondView.addSubview(countTempLabel)
-        
         secondView.addSubview(dewPointsLabel)
         secondView.addSubview(iconDevIV)
         secondView.addSubview(countDevLabel)
-        
         secondView.addSubview(pressureLabel)
         secondView.addSubview(iconPresIV)
         secondView.addSubview(countPresLabel)
-        
         secondView.addSubview(humidityLabel)
         secondView.addSubview(iconHumIV)
         secondView.addSubview(countHumLabel)
@@ -404,7 +394,7 @@ class WeatherView: UIView {
             make.height.equalTo(48)
         }
         
-        errorlonLabel.snp.makeConstraints { make in
+        errorLonLabel.snp.makeConstraints { make in
             make.top.equalTo(textFieldLon.snp.bottom).offset(4)
             make.left.equalToSuperview().offset(16)
         }
@@ -420,7 +410,7 @@ class WeatherView: UIView {
             make.height.equalTo(48)
         }
         
-        errorlatLabel.snp.makeConstraints { make in
+        errorLatLabel.snp.makeConstraints { make in
             make.top.equalTo(textFieldLat.snp.bottom).offset(4)
             make.left.equalToSuperview().offset(16)
         }
@@ -529,50 +519,12 @@ class WeatherView: UIView {
         }
     }
     
-    // MARK: - UITextFieldDelegate
-        
-        func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            // Разрешенные символы
-            let allowedCharacters = CharacterSet(charactersIn: "0123456789.-,")
-            let characterSet = CharacterSet(charactersIn: string)
-            if !allowedCharacters.isSuperset(of: characterSet) {
-                return false
-            }
-            
-            // Заменить запятую на точку
-            if string == "," {
-                if let text = textField.text {
-                    textField.text = text + "."
-                }
-                return false
-            }
-            
-            // Убедиться, что точка присутствует только одна
-            if string == "." {
-                if let text = textField.text, text.contains(".") {
-                    return false
-                }
-            }
-            
-            // Убедиться, что знак минус только в начале строки
-            if string == "-" {
-                if let text = textField.text, !text.isEmpty {
-                    return false
-                }
-            }
-            
-            return true
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        textField.layer.borderColor = UIColor.cDarkBlue.cgColor
+        if textField == textFieldLat {
+            textFieldLon.layer.borderColor = UIColor.cGrey.cgColor
+        } else if textField == textFieldLon {
+            textFieldLat.layer.borderColor = UIColor.cGrey.cgColor
         }
-           
-    // MARK: - UITextFieldDelegate
-        
-        func textFieldDidBeginEditing(_ textField: UITextField) {
-            textField.layer.borderColor = UIColor.cDarkBlue.cgColor
-            if textField == textFieldLat {
-                textFieldLon.layer.borderColor = UIColor.cGrey.cgColor
-            } else if textField == textFieldLon {
-                textFieldLat.layer.borderColor = UIColor.cGrey.cgColor
-            }
-        }
-        
+    }
 }
